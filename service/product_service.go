@@ -4,7 +4,6 @@ import (
 	"challenge-3/entity"
 	"challenge-3/repository"
 	"errors"
-	"fmt"
 )
 
 type ProductService struct {
@@ -21,9 +20,14 @@ func (service ProductService) GetOneProduct(id int) (*entity.Product, error) {
 
 func (service ProductService) GetAllProduct() (*[]entity.Product, error) {
 	product := service.Repository.FindAll()
-	fmt.Println(product)
-	if product == nil {
-		return nil, errors.New("product not found")
+
+	length := len(*product)
+
+	if product != nil {
+		if length <= 0 {
+			return nil, errors.New("product not found")
+		}
 	}
+
 	return product, nil
 }

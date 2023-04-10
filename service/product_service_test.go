@@ -43,18 +43,8 @@ func TestProductServiceGetOneProduct(t *testing.T) {
 	assert.Equal(t, &product, result, "result has to be a product with id 2")
 }
 
-func TestProductServiceGetAllProductNotFound(t *testing.T) {
-	productRepository.Mock.On("FindAll").Return(nil)
-
-	product, err := productService.GetAllProduct()
-
-	assert.Nil(t, product)
-	assert.NotNil(t, err)
-	assert.Equal(t, "product not found", err.Error(), "error response has to be 'product not found'")
-}
-
 func TestProductServiceGetAllProduct(t *testing.T) {
-	product := []entity.Product{
+	products := []entity.Product{
 		{
 			Id:          1,
 			Title:       "Kaca mata",
@@ -67,15 +57,33 @@ func TestProductServiceGetAllProduct(t *testing.T) {
 		},
 	}
 
-	productRepository.Mock.On("FindAll").Return(product)
+	productRepository.Mock.On("FindAll").Return(products)
 
 	result, err := productService.GetAllProduct()
 
 	assert.Nil(t, err)
 	assert.NotNil(t, result)
 
-	// assert.Equal(t, product.Id, result.Id, "result has to be 2")
-	// assert.Equal(t, product.Title, result.Title, "result has to be 'Kaca mata'")
-	// assert.Equal(t, product.Description, result.Description, "result has to be 'Lensa Photocromic'")
-	// assert.Equal(t, &product, result, "result has to be a product 2 total lenght")
+	assert.Equal(t, (*result)[0], entity.Product{
+		Id:          1,
+		Title:       "Kaca mata",
+		Description: "Lensa Photocromic",
+	}, "result has id 1, title kaca mata, and description lensa photocromic")
+
+	assert.Equal(t, (*result)[1], entity.Product{
+		Id:          2,
+		Title:       "Mouse",
+		Description: "Lampu RGB",
+	}, "result has id 2, title mouse, and description lampu rgb")
+}
+
+func TestProductServiceGetAllProductNotFound(t *testing.T) {
+	product := []entity.Product{}
+	productRepository.Mock.On("FindAll").Return(product)
+
+	result, err := productService.GetAllProduct()
+
+	assert.Nil(t, result)
+	assert.NotNil(t, err)
+	assert.Equal(t, "product not found", err.Error(), "error response has to be 'product not found'")
 }
